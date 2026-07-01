@@ -1,0 +1,15 @@
+{
+  "name": "queueforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Asynchronous notification processing system with RabbitMQ and Redis",
+  "workspaces": [
+    "api",
+    "worker"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=api",
+    "dev:worker": "npm run dev --workspace=worker"
+  },
+  "license": "MIT"
+}

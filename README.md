@@ -130,6 +130,7 @@ queueforge/
 - **Image processing pipeline** — extend the worker architecture to handle a second, heavier job type (e.g. thumbnail generation on upload), to demonstrate queue routing across different workloads.
 - Structured logging and basic metrics (job throughput, failure rate)
 - Integration tests for the full publish → consume → retry → DLQ flow
+- Security hardening on the API (e.g. helmet for security headers, cors configuration)
 
 ## License
 
