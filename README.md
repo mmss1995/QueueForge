@@ -9,20 +9,20 @@ Most CRUD-style portfolio APIs respond synchronously and never fail gracefully. 
 ## Architecture
 
 ```
-┌─────────────┐      publish       ┌──────────────┐      consume      ┌─────────────┐
-│  API Service │ ─────────────────▶ │   RabbitMQ    │ ─────────────────▶ │   Worker    │
-│ (Express)    │                    │ (notifications│                    │  Service    │
-└─────────────┘                    │     queue)     │                    └─────────────┘
-       │                            └──────────────┘                            │
-       │                                    │ nack/fail                         │
-       │                                    ▼                                   │
-       │                          ┌──────────────────┐                          │
-       │                          │ Dead Letter Queue │                         │
-       │                          └──────────────────┘                          │
-       │                                                                        │
-       ▼                                                                        ▼
+┌─────────────┐      publish       ┌──────────────┐      consume       ┌─────────────┐
+│ API Service │ ─────────────────▶ │   RabbitMQ   │ ─────────────────▶ │   Worker    │
+│ (Express)   │                    │(notifications│                    │  Service    │
+└─────────────┘                    │   queue)     │                    └─────────────┘
+       │                           └──────────────┘                            │
+       │                                    │ nack/fail                        │
+       │                                    ▼                                  │
+       │                          ┌───────────────────┐                        │
+       │                          │ Dead Letter Queue │                        │
+       │                          └───────────────────┘                        │
+       │                                                                       │
+       ▼                                                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                     Redis                                        │
+│                                     Redis                                       │
 │              (job status tracking: pending → processing → sent/failed)          │
 │                         (API rate limiting)                                     │
 └─────────────────────────────────────────────────────────────────────────────────┘
