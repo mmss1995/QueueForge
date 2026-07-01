@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 import { startConsumer } from './consumers/notificationConsumer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+
+const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.env.local';
+dotenv.config({ path: path.resolve(__dirname, '../../', envFile) });
 
 startConsumer().catch((err) => {
   console.error('Failed to start worker:', err);
