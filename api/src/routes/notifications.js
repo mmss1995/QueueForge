@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { notificationSchema } from '../validation/notification.js';
 import { setJobStatus, getJobStatus } from '../services/jobStatus.js';
+import { publishNotification } from '../services/queueClient.js';
 
 const router = Router();
 
@@ -19,8 +20,7 @@ router.post('/notifications', async (req, res) => {
   const notification = parseResult.data;
 
   await setJobStatus(jobId, 'pending');
-
-  // TODO: publish `notification` + jobId to RabbitMQ queue
+  await publishNotification(jobId, notification);
 
   res.status(202).json({ jobId, status: 'pending' });
 });

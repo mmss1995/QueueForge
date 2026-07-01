@@ -2,10 +2,12 @@ import { describe, it, expect, afterAll } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
 import { closeRedisClient } from '../services/redisClient.js';
+import { closeQueueConnection } from '../services/queueClient.js';
 
 describe('POST /notifications', () => {
   afterAll(async () => {
     await closeRedisClient();
+    await closeQueueConnection();
   });
 
   it('returns 400 for an invalid email', async () => {
