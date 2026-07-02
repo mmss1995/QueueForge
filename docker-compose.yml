@@ -23,7 +23,9 @@ services:
       retries: 5
 
   api:
-    build: ./api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     ports:
       - "3000:3000"
     env_file:
@@ -34,10 +36,13 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./api/src:/app/src
+      - ./api/src:/app/api/src
+      - ./shared/src:/app/shared/src
 
   worker:
-    build: ./worker
+    build: 
+      context: .
+      dockerfile: worker/Dockerfile
     env_file:
       - .env
     depends_on:
@@ -46,4 +51,5 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - ./worker/src:/app/src
+      - ./worker/src:/app/worker/src
+      - ./shared/src:/app/shared/src

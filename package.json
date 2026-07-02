@@ -5,7 +5,8 @@
   "description": "Asynchronous notification processing system with RabbitMQ and Redis",
   "workspaces": [
     "api",
-    "worker"
+    "worker",
+    "shared"
   ],
   "scripts": {
     "dev:api": "npm run dev --workspace=api",
