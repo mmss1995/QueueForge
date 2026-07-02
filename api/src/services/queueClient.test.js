@@ -27,20 +27,29 @@ describe('RabbitMQ connection - queueClient', () => {
     const verifyChannel = await verifyConnection.createChannel();
     await verifyChannel.assertQueue(QUEUE_NAME, { durable: true });
 
+    // NOTE: the queue is a real, shared resource. Other test files (e.g. the
+    // notifications.test.js route tests) or running services may publish to
+    // it concurrently. We can't assume the next message in the queue is ours,
+    // so we filter by jobId and discard (ack) anything that doesn't match,
+    // instead of relying on the queue being empty beforehand.
     const receivedMessage = await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new Error('Timed out waiting for message on queue'));
+        reject(new Error('Timed out waiting for our message on the queue'));
       }, 5000);
 
       verifyChannel.consume(
         QUEUE_NAME,
         (msg) => {
-          if (msg) {
+          if (!msg) return;
+
+          const parsed = JSON.parse(msg.content.toString());
+          verifyChannel.ack(msg);
+
+          if (parsed.jobId === testJobId) {
             clearTimeout(timeout);
-            const parsed = JSON.parse(msg.content.toString());
-            verifyChannel.ack(msg);
             resolve(parsed);
           }
+          // else: message from a concurrent test/process, discard and keep waiting
         },
         { noAck: false }
       );
